@@ -1,5 +1,6 @@
 from pyocci import client
 
+
 class CapabilitiesManager(client.Manager):
     def list(self):
         """

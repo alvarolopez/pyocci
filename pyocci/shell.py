@@ -13,9 +13,10 @@ from pyocci import exceptions
 from pyocci import utils
 from pyocci.v1_1 import shell as shell_v1_1
 
-DEFAULT_OCCI_API_VERSION=1.1
+DEFAULT_OCCI_API_VERSION = 1.1
 
 logger = logging.getLogger(__name__)
+
 
 class OcciArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
@@ -33,44 +34,51 @@ class OcciShell(object):
         )
 
         # Global arguments
-        parser.add_argument('-h', '--help',
+        parser.add_argument(
+            '-h', '--help',
             action='store_true',
             help=argparse.SUPPRESS,
         )
 
-        parser.add_argument('--version',
+        parser.add_argument(
+            '--version',
             action='version',
             version=pyocci.__version__
         )
 
-        parser.add_argument('--debug',
+        parser.add_argument(
+            '--debug',
             default=False,
             action='store_true',
             help="Print debugging output"
         )
 
         # API versioning
-        parser.add_argument('--occi-api-version',
+        parser.add_argument(
+            '--occi-api-version',
             metavar='<occi-api-ver>',
             default=utils.env('OCCI_API_VERSION',
-                default=DEFAULT_OCCI_API_VERSION),
+                              default=DEFAULT_OCCI_API_VERSION),
             help='Accepts 1.1, defaults to env[OCCI_API_VERSION].'
         )
 
         # Connection arguments
-        parser.add_argument('--endpoint-url',
+        parser.add_argument(
+            '--endpoint-url',
             default=utils.env('OCCI_ENDPOINT_URL'),
             help='Defaults to env[OCCI_ENDPOINT_URL].'
         )
 
-        parser.add_argument('--occi-cacert',
+        parser.add_argument(
+            '--occi-cacert',
             metavar='<ca-certificate>',
             default=utils.env('OCCI_CACERT', default=None),
             help='Specify a CA bundle file to use in '
                  'verifying a TLS (https) server certificate. '
                  'Defaults to env[OCCI_CACERT]')
 
-        parser.add_argument('--insecure',
+        parser.add_argument(
+            '--insecure',
             default=utils.env('OCCI_INSECURE', default=False),
             action='store_true',
             help="Explicitly allow pyocci to perform \"insecure\" "
@@ -79,28 +87,33 @@ class OcciShell(object):
                  "This option should be used with caution.")
 
         # Authentication options
-        parser.add_argument("--auth-type",
+        parser.add_argument(
+            "--auth-type",
             default="voms",
-            help=("One of %s, . Defaults to 'voms'" %
-                client.HTTPClient.auth_methods.keys())
+            help=("One of %s. Defaults to 'voms'" %
+                  client.HTTPClient.auth_methods.keys())
         )
 
-        parser.add_argument("--occi-username",
+        parser.add_argument(
+            "--occi-username",
             default=utils.env("OCCI_USERNAME"),
             help="Defaults to env[OCCI_USERNAME]"
         )
 
-        parser.add_argument("--occi-password",
+        parser.add_argument(
+            "--occi-password",
             default=utils.env("OCCI_PASSWORD"),
             help="Defaults to env[OCCI_PASSWORD]"
         )
 
-        parser.add_argument("--occi-group",
+        parser.add_argument(
+            "--occi-group",
             default=utils.env("OCCI_GROUP"),
             help="Defaults to env[OCCI_GROUP]"
         )
 
-        parser.add_argument("--x509-user-proxy",
+        parser.add_argument(
+            "--x509-user-proxy",
             default=utils.env("X509_USER_PROXY"),
             help="Defaults to env[X509_USER_PROXY]"
         )
@@ -134,22 +147,22 @@ class OcciShell(object):
             action_help = desc.strip().split('\n')[0]
             arguments = getattr(callback, 'arguments', [])
 
-            subparser = subparsers.add_parser(command,
+            subparser = subparsers.add_parser(
+                command,
                 help=action_help,
                 description=desc,
                 add_help=False,
             )
             subparser.add_argument('-h', '--help',
-                action='help',
-                help=argparse.SUPPRESS,
-            )
+                                   action='help',
+                                   help=argparse.SUPPRESS)
             self.subcommands[command] = subparser
             for (args, kwargs) in arguments:
                 subparser.add_argument(*args, **kwargs)
             subparser.set_defaults(func=callback)
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
-                    help='Display help for <subcommand>')
+               help='Display help for <subcommand>')
     def do_help(self, args):
         """
         Display help about this program or one of its subcommands.
@@ -158,8 +171,9 @@ class OcciShell(object):
             if args.command in self.subcommands:
                 self.subcommands[args.command].print_help()
             else:
-                raise exceptions.CommandError("'%s' is not a valid subcommand" %
-                                              args.command)
+                raise exceptions.CommandError(
+                    "'%s' is not a valid subcommand" % args.command
+                )
         else:
             self.parser.print_help()
 
@@ -179,7 +193,7 @@ class OcciShell(object):
         self.setup_debugging(options.debug)
 
         subcommand_parser = self.get_subcommand_parser(
-                options.occi_api_version)
+            options.occi_api_version)
         self.parser = subcommand_parser
 
         if options.help or not argv:
@@ -200,16 +214,15 @@ class OcciShell(object):
             group,
             x509_user_proxy,
             insecure,
-            ) = (
-                    args.endpoint_url,
-                    args.auth_type,
-                    args.occi_username,
-                    args.occi_password,
-                    args.occi_group,
-                    args.x509_user_proxy,
-                    args.insecure,
-                )
-
+        ) = (
+            args.endpoint_url,
+            args.auth_type,
+            args.occi_username,
+            args.occi_password,
+            args.occi_group,
+            args.x509_user_proxy,
+            args.insecure,
+        )
 
         if not endpoint_url:
             raise exceptions.CommandError("You must provide and endpoint url "
@@ -217,26 +230,29 @@ class OcciShell(object):
                                           "env[OCCI_ENDPOINT_URL]")
 
         if auth_type not in client.HTTPClient.auth_methods.keys():
-            raise exceptions.CommandError("Specified 'auth_type' not "
-                "supported, provided '%s', expected one of "
-                "%s" % (auth_type, client.HTTPClient.auth_methods.keys()))
+            raise exceptions.CommandError(
+                "Specified 'auth_type' not supported, provided '%s', expected "
+                "one of %s" % (auth_type,
+                               client.HTTPClient.auth_methods.keys())
+            )
 
         if auth_type == "voms" and not x509_user_proxy:
-            raise exceptions.CommandError("If you are using VOMS authentication "
-                                          "you must provide a valid proxy file "
-                                          "via either --x509_user_proxy or "
-                                          "env[X509_USER_PROXY]")
+            raise exceptions.CommandError(
+                "If you are using VOMS authentication you must provide a valid"
+                " proxy file via either --x509_user_proxy or "
+                "env[X509_USER_PROXY]"
+            )
 
         self.cs = client.Client(
-                options.occi_api_version,
-                endpoint_url,
-                auth_type,
-                username=username,
-                password=password,
-                group=group,
-                x509_user_proxy=x509_user_proxy,
-                http_log_debug=options.debug,
-                insecure=insecure,
+            options.occi_api_version,
+            endpoint_url,
+            auth_type,
+            username=username,
+            password=password,
+            group=group,
+            x509_user_proxy=x509_user_proxy,
+            http_log_debug=options.debug,
+            insecure=insecure,
         )
 
         args.func(self.cs, args)

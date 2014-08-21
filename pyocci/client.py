@@ -74,7 +74,6 @@ class HTTPClient(object):
             else:
                 self.verify_cert = True
 
-
         self.http_log_debug = http_log_debug
         if timeout is not None:
             self.timeout = float(timeout)
@@ -162,7 +161,7 @@ class HTTPClient(object):
             # or 'actively refused' in the body, so that's what we'll do.
             if resp.status_code == 400:
                 if ('Connection refused' in resp.text or
-                    'actively refused' in resp.text):
+                        'actively refused' in resp.text):
                     raise exceptions.ConnectionRefused(resp.text)
             try:
                 body = json.loads(resp.text)
@@ -177,28 +176,26 @@ class HTTPClient(object):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
-#        self.authenticate()
-
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.
         try:
             if self.auth_token:
-                kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
+                kwargs.setdefault('headers',
+                                  {})['X-Auth-Token'] = self.auth_token
 #            if self.projectid:
 #                kwargs['headers']['X-Auth-Project-Id'] = self.projectid
 
             resp, body = self.request(self.endpoint_url + url, method,
-                                            **kwargs)
+                                      **kwargs)
             return resp, body
         except exceptions.Unauthorized, ex:
-#            raise ex
             try:
                 self.authenticate()
-                kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
-#                kwargs['headers']['X-Auth-Token'] = self.auth_token
+                kwargs.setdefault('headers',
+                                  {})['X-Auth-Token'] = self.auth_token
                 resp, body = self.request(self.endpoint_url + url,
-                                                method, **kwargs)
+                                          method, **kwargs)
                 return resp, body
             except exceptions.Unauthorized:
                 raise ex
@@ -249,8 +246,6 @@ class HTTPClient(object):
         return None
 
 #        #print token_url
-##        tmp_follow_all_redirects = self.follow_all_redirects
-##        self.follow_all_redirects = True
 #
 #        #print body
 #        try:
@@ -268,7 +263,8 @@ class HTTPClient(object):
 #            raise exceptions.from_response(resp, body, url, "POST")
 
     def _authenticate_voms(self):
-        resp, body = self.request(self.endpoint_url, 'GET', exit_on_failure=False)
+        resp, body = self.request(self.endpoint_url, 'GET',
+                                  exit_on_failure=False)
         if resp.status_code == 401 and 'www-authenticate' in resp.headers:
             auth_url = resp.headers.get('www-authenticate', None)
             if auth_url:
@@ -278,7 +274,8 @@ class HTTPClient(object):
                 if auth_method == "Keystone":
                     return self._authenticate_with_keystone(auth_url)
         elif resp.status_code >= 400:
-            raise exceptions.from_response(resp, body, self.endpoint_url, "GET")
+            raise exceptions.from_response(resp, body,
+                                           self.endpoint_url, "GET")
         return resp, body
 
     auth_methods = {

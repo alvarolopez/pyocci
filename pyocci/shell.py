@@ -58,7 +58,7 @@ class OcciShell(object):
         )
 
         # Connection arguments
-        parser.add_argument('--endpoint_url',
+        parser.add_argument('--endpoint-url',
             default=utils.env('OCCI_ENDPOINT_URL'),
             help='Defaults to env[OCCI_ENDPOINT_URL].'
         )
@@ -79,28 +79,28 @@ class OcciShell(object):
                  "This option should be used with caution.")
 
         # Authentication options
-        parser.add_argument("--auth_type",
+        parser.add_argument("--auth-type",
             default="voms",
             help=("One of %s, . Defaults to 'voms'" %
                 client.HTTPClient.auth_methods.keys())
         )
 
-        parser.add_argument("--occi_username",
+        parser.add_argument("--occi-username",
             default=utils.env("OCCI_USERNAME"),
             help="Defaults to env[OCCI_USERNAME]"
         )
 
-        parser.add_argument("--occi_password",
+        parser.add_argument("--occi-password",
             default=utils.env("OCCI_PASSWORD"),
             help="Defaults to env[OCCI_PASSWORD]"
         )
 
-        parser.add_argument("--occi_group",
+        parser.add_argument("--occi-group",
             default=utils.env("OCCI_GROUP"),
             help="Defaults to env[OCCI_GROUP]"
         )
 
-        parser.add_argument("--x509_user_proxy",
+        parser.add_argument("--x509-user-proxy",
             default=utils.env("X509_USER_PROXY"),
             help="Defaults to env[X509_USER_PROXY]"
         )

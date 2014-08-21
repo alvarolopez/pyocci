@@ -210,7 +210,10 @@ class HTTPClient(object):
 
     def _authenticate_with_keystone(self, url, **kwargs):
         version = "v2.0"
-        url =  url + version
+        if not url.endswith("/"):
+            url += "/"
+
+        url += version
 
         if self.auth_token:
             body = {"auth": {

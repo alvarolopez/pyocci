@@ -85,3 +85,13 @@ def do_instance_list(cs, args):
         pt.add_row(row)
 
     print(pt.get_string())
+
+
+@utils.arg('instance',
+           help='Instance OCCI ID')
+def do_instance_show(cs, args):
+    """Get details about an instance."""
+
+    instance = cs.instances.detail(args.instance)
+
+    utils.print_dict(instance["attributes"])

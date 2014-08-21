@@ -1,10 +1,12 @@
-Quick instructions:
+# PyOCCI CLI
 
-virtualenv VENV
-source VENV/bin/activate
-python setup.py install
+This is a draft of a OCCI client written in Python.
 
-voms-proxy-init -voms fedcloud.egi.eu -rfc
+## Quick instructions:
 
-pyocci --debug --insecure --endpoint_url https://example.org:8787 --occi_group foobar capabilities
+    $ virtualenv VENV
+    $ source VENV/bin/activate
+    $ python setup.py install
+    $ voms-proxy-init -voms fedcloud.egi.eu -rfc
+    $ pyocci --debug --insecure --endpoint-url https://example.org:8787 --occi-group foobar capabilities
 

@@ -14,6 +14,7 @@
 
 import prettytable
 
+from pyocci import exceptions
 from pyocci import occi
 from pyocci import utils
 
@@ -91,7 +92,13 @@ def do_instance_list(cs, args):
            help='Instance OCCI ID')
 def do_instance_show(cs, args):
     """Get details about an instance."""
-    instance = cs.instances.detail(args.instance)
+    try:
+        instance = cs.instances.detail(args.instance)
+    except exceptions.NotFound as e:
+        msg = "No server with an id of '%s' exists" % args.instance
+        e.message = msg
+        raise
+
     _print_server_details(instance)
 
 

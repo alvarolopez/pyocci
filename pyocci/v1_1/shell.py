@@ -107,7 +107,17 @@ def do_instance_show(cs, args):
                 d["%s id" % k] = mixin.get("term", None)
                 d["%s scheme" % k] = mixin.get("scheme", None)
                 continue
+
+    d["network"] = []
     for link in instance.get("links", []):
-        pass
+        if occi.CATEGORIES["network"] in link["kind"].get("related", []):
+            mac = link["attributes"]["occi.networkinterface.mac"]
+            address = link["attributes"].get("occi.networkinterface.address",
+                                             None)
+            if not address:
+                address = link["attributes"].get("occi.networkinterface.ip6",
+                                                 None)
+
+            d["network"].append("%s (%s)" % (address, mac))
 
     utils.print_dict(d)

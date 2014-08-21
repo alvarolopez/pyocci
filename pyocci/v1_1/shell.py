@@ -14,6 +14,7 @@
 
 import prettytable
 
+from pyocci import occi
 from pyocci import utils
 
 
@@ -67,8 +68,7 @@ def do_instance_list(cs, args):
             links = instance.get("links", [])
             network = []
             for link in links:
-                # FIXME(aloga): is this really true?
-                if link["kind"]["term"] == "networkinterface":
+                if occi.CATEGORIES["network"] in link["kind"]["related"]:
                     # get IPv4
                     ip = link["attributes"].get(
                         "occi.networkinterface.address",
@@ -98,8 +98,8 @@ def do_instance_show(cs, args):
 
     for mixin in instance.get("mixins", []):
         mmap = {
-            "image": "http://schemas.ogf.org/occi/infrastructure#os_tpl",
-            "flavor": "http://schemas.ogf.org/occi/infrastructure#resource_tpl",
+            "image": occi.CATEGORIES["image"],
+            "flavor": occi.CATEGORIES["flavor"],
         }
         for k, url in mmap.iteritems():
             if url in mixin.get("related", []):
@@ -107,5 +107,7 @@ def do_instance_show(cs, args):
                 d["%s id" % k] = mixin.get("term", None)
                 d["%s scheme" % k] = mixin.get("scheme", None)
                 continue
+    for link in instance.get("links", []):
+        pass
 
     utils.print_dict(d)

@@ -14,29 +14,24 @@ except ImportError:
 from pyocci import exceptions
 from pyocci import utils
 
+
 class Manager(object):
     """Provide CRUD operations."""
 
     def __init__(self, api):
         self.api = api
 
-#    def _list(self, url, response_key, obj_class=None, body=None):
     def _list(self, url, obj_class=None, body=None):
         if body:
             _resp, body = self.api.client.post(url, body=body)
         else:
             _resp, body = self.api.client.get(url)
+        return body
 
-#        if obj_class is None:
-#            obj_class = self.resource_class
+    def _get(self, url):
+        _resp, body = self.api.client.get(url)
+        return body
 
-#        print _resp.headers
-#        data = None
-        # FIXME(aloga): this needs to be fixed
-        data = body
-#        data = body[response_key]
-#        data = utils.occi_text_to_dicts(body)
-        return data
 
 class HTTPClient(object):
 

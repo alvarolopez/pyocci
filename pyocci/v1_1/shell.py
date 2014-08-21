@@ -94,4 +94,18 @@ def do_instance_show(cs, args):
 
     instance = cs.instances.detail(args.instance)
 
-    utils.print_dict(instance["attributes"])
+    d = instance["attributes"].copy()
+
+    for mixin in instance.get("mixins", []):
+        mmap = {
+            "image": "http://schemas.ogf.org/occi/infrastructure#os_tpl",
+            "flavor": "http://schemas.ogf.org/occi/infrastructure#resource_tpl",
+        }
+        for k, url in mmap.iteritems():
+            if url in mixin.get("related", []):
+                d["%s name" % k] = mixin.get("title", None)
+                d["%s id" % k] = mixin.get("term", None)
+                d["%s scheme" % k] = mixin.get("scheme", None)
+                continue
+
+    utils.print_dict(d)

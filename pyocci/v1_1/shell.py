@@ -91,8 +91,11 @@ def do_instance_list(cs, args):
            help='Instance OCCI ID')
 def do_instance_show(cs, args):
     """Get details about an instance."""
-
     instance = cs.instances.detail(args.instance)
+    _print_server_details(instance)
+
+
+def _print_server_details(instance):
 
     d = instance["attributes"].copy()
 

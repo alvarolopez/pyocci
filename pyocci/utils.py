@@ -67,8 +67,6 @@ def print_list(objs, fields, sortby=None):
         row = []
         for field in fields:
             row.append(o.get(field, None))
-#        for k, v in o.iteritems():
-#            row.append(k)
         pt.add_row(row)
 
     result = pt.get_string(sortby=sortby)
